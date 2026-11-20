@@ -1,0 +1,151 @@
+---
+Metadata:
+  AWSToolsMetrics:
+    IaC_Generator: "arn:aws:cloudformation:us-east-1:631946744960:generatedTemplate/8ebec0c7-97a1-467a-9ef5-d0f4f65dff64"
+Resources:
+  IAMManagedPolicyPolicyserviceroleAmazonBedrockOSSPolicyForKnowledgeBasedx9cw:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::IAM::ManagedPolicy"
+    DeletionPolicy: "Delete"
+    Properties:
+      ManagedPolicyName: "AmazonBedrockOSSPolicyForKnowledgeBase_dx9cw"
+      Path: "/service-role/"
+      Description: ""
+      Groups: []
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+        - Resource:
+          - "arn:aws:aoss:us-east-1:631946744960:collection/jynfz82r60fub9l72eri"
+          Action:
+          - "aoss:APIAccessAll"
+          Effect: "Allow"
+          Sid: "OpenSearchServerlessAPIAccessAllStatement"
+      Roles:
+      - "AmazonBedrockExecutionRoleForKnowledgeBase_dx9cw"
+      Users: []
+  IAMManagedPolicyPolicyserviceroleAmazonBedrockFoundationModelPolicyForKnowledgeBasedx9cw:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::IAM::ManagedPolicy"
+    DeletionPolicy: "Delete"
+    Properties:
+      ManagedPolicyName: "AmazonBedrockFoundationModelPolicyForKnowledgeBase_dx9cw"
+      Path: "/service-role/"
+      Description: ""
+      Groups: []
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+        - Resource:
+          - "arn:aws:bedrock:us-east-1::foundation-model/amazon.titan-embed-text-v2:0"
+          Action:
+          - "bedrock:InvokeModel"
+          Effect: "Allow"
+          Sid: "BedrockInvokeModelStatement"
+        - Condition:
+            StringEquals:
+              aws:CalledViaLast: "bedrock.amazonaws.com"
+          Resource: "*"
+          Action:
+          - "aws-marketplace:Subscribe"
+          - "aws-marketplace:ViewSubscriptions"
+          - "aws-marketplace:Unsubscribe"
+          Effect: "Allow"
+          Sid: "MarketplaceOperationsFromBedrockFor3pModels"
+      Roles:
+      - "AmazonBedrockExecutionRoleForKnowledgeBase_dx9cw"
+      Users: []
+  IAMRoleAmazonBedrockExecutionRoleForKnowledgeBasedx9cw:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::IAM::Role"
+    DeletionPolicy: "Delete"
+    Properties:
+      Path: "/service-role/"
+      ManagedPolicyArns:
+      - "arn:aws:iam::631946744960:policy/service-role/AmazonBedrockOSSPolicyForKnowledgeBase_dx9cw"
+      - "arn:aws:iam::631946744960:policy/service-role/AmazonBedrockFoundationModelPolicyForKnowledgeBase_dx9cw"
+      - "arn:aws:iam::631946744960:policy/service-role/AmazonBedrockS3PolicyForKnowledgeBase_dx9cw"
+      MaxSessionDuration: 3600
+      RoleName: "AmazonBedrockExecutionRoleForKnowledgeBase_dx9cw"
+      Description: "Bedrock Knowledge Base access"
+      Policies:
+      - PolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+          - Resource:
+            - "arn:aws:bedrock:us-east-1:631946744960:guardrail-profile/us.guardrail.v1:0"
+            Action:
+            - "bedrock:ApplyGuardrail"
+            Effect: "Allow"
+        PolicyName: "bedrock@new"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+        - Condition:
+            StringEquals:
+              aws:SourceAccount: "631946744960"
+            ArnLike:
+              aws:SourceArn: "arn:aws:bedrock:us-east-1:631946744960:knowledge-base/*"
+          Action: "sts:AssumeRole"
+          Effect: "Allow"
+          Principal:
+            Service: "bedrock.amazonaws.com"
+          Sid: "AmazonBedrockKnowledgeBaseTrustPolicy"
+  S3BucketSaaenterprisehrdocs2026:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::S3::Bucket"
+    DeletionPolicy: "Delete"
+    Properties:
+      AbacStatus: "Disabled"
+      PublicAccessBlockConfiguration:
+        RestrictPublicBuckets: true
+        IgnorePublicAcls: true
+        BlockPublicPolicy: true
+        BlockPublicAcls: true
+      BucketName: "saa-enterprise-hr-docs-2026"
+      OwnershipControls:
+        Rules:
+        - ObjectOwnership: "BucketOwnerEnforced"
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+        - BucketKeyEnabled: true
+          BlockedEncryptionTypes:
+            EncryptionType:
+            - "SSE-C"
+          ServerSideEncryptionByDefault:
+            SSEAlgorithm: "AES256"
+  IAMManagedPolicyPolicyserviceroleAmazonBedrockS3PolicyForKnowledgeBasedx9cw:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::IAM::ManagedPolicy"
+    DeletionPolicy: "Delete"
+    Properties:
+      ManagedPolicyName: "AmazonBedrockS3PolicyForKnowledgeBase_dx9cw"
+      Path: "/service-role/"
+      Description: ""
+      Groups: []
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+        - Condition:
+            StringEquals:
+              aws:ResourceAccount:
+              - "631946744960"
+          Resource:
+          - "arn:aws:s3:::saa-enterprise-hr-docs-2026"
+          Action:
+          - "s3:ListBucket"
+          Effect: "Allow"
+          Sid: "S3ListBucketStatement"
+        - Condition:
+            StringEquals:
+              aws:ResourceAccount:
+              - "631946744960"
+          Resource:
+          - "arn:aws:s3:::saa-enterprise-hr-docs-2026/*"
+          Action:
+          - "s3:GetObject"
+          Effect: "Allow"
+          Sid: "S3GetObjectStatement"
+      Roles:
+      - "AmazonBedrockExecutionRoleForKnowledgeBase_dx9cw"
+      Users: []
